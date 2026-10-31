@@ -1,73 +1,41 @@
-import { Platform, StyleSheet, Text, type TextProps } from 'react-native';
+import { Text, type TextProps } from 'react-native';
 
 import { Fonts, ThemeColor } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
 
 export type ThemedTextProps = TextProps & {
   type?: 'default' | 'title' | 'small' | 'smallBold' | 'subtitle' | 'link' | 'linkPrimary' | 'code';
   themeColor?: ThemeColor;
 };
 
-export function ThemedText({ style, type = 'default', themeColor, ...rest }: ThemedTextProps) {
-  const theme = useTheme();
+const typeClasses: Record<NonNullable<ThemedTextProps['type']>, string> = {
+  default: 'text-base font-medium',
+  title: 'text-[48px] leading-[52px] font-semibold',
+  small: 'text-sm font-medium',
+  smallBold: 'text-sm font-bold',
+  subtitle: 'text-[32px] leading-[44px] font-semibold',
+  link: 'text-sm leading-[30px]',
+  linkPrimary: 'text-sm leading-[30px]',
+  code: 'text-xs font-medium android:font-bold',
+};
+
+// Full class strings so Tailwind can find them when scanning the source.
+const colorClasses: Record<ThemeColor, string> = {
+  text: 'text-foreground dark:text-foreground-dark',
+  textSecondary: 'text-muted dark:text-muted-dark',
+  background: 'text-background dark:text-background-dark',
+  backgroundElement: 'text-element dark:text-element-dark',
+  backgroundSelected: 'text-selected dark:text-selected-dark',
+};
+
+export function ThemedText({ className, style, type = 'default', themeColor, ...rest }: ThemedTextProps) {
+  const colorClass = type === 'linkPrimary' ? 'text-link' : colorClasses[themeColor ?? 'text'];
 
   return (
     <Text
-      style={[
-        { color: theme[themeColor ?? 'text'] },
-        type === 'default' && styles.default,
-        type === 'title' && styles.title,
-        type === 'small' && styles.small,
-        type === 'smallBold' && styles.smallBold,
-        type === 'subtitle' && styles.subtitle,
-        type === 'link' && styles.link,
-        type === 'linkPrimary' && styles.linkPrimary,
-        type === 'code' && styles.code,
-        style,
-      ]}
+      className={`${colorClass} ${typeClasses[type]} ${className ?? ''}`}
+      // Platform-specific font stack, which a single Tailwind class can't express.
+      style={[type === 'code' && { fontFamily: Fonts.mono }, style]}
       {...rest}
     />
   );
 }
-
-const styles = StyleSheet.create({
-  small: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: 500,
-  },
-  smallBold: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: 700,
-  },
-  default: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: 500,
-  },
-  title: {
-    fontSize: 48,
-    fontWeight: 600,
-    lineHeight: 52,
-  },
-  subtitle: {
-    fontSize: 32,
-    lineHeight: 44,
-    fontWeight: 600,
-  },
-  link: {
-    lineHeight: 30,
-    fontSize: 14,
-  },
-  linkPrimary: {
-    lineHeight: 30,
-    fontSize: 14,
-    color: '#3c87f7',
-  },
-  code: {
-    fontFamily: Fonts.mono,
-    fontWeight: Platform.select({ android: 700 }) ?? 500,
-    fontSize: 12,
-  },
-});

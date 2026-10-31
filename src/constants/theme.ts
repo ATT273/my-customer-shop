@@ -1,9 +1,8 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Colors used in the app, in light and dark mode.
+ * Styling is done with NativeWind classes (palette in tailwind.config.js); these values are for props
+ * that need a raw color, such as `tintColor` or `placeholderTextColor`. Keep both in sync.
  */
-
-import '@/global.css';
 
 import { Platform } from 'react-native';
 
