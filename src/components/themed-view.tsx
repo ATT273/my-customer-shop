@@ -1,7 +1,6 @@
 import { View, type ViewProps } from 'react-native';
 
 import { ThemeColor } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
 
 export type ThemedViewProps = ViewProps & {
   lightColor?: string;
@@ -9,8 +8,17 @@ export type ThemedViewProps = ViewProps & {
   type?: ThemeColor;
 };
 
-export function ThemedView({ style, lightColor, darkColor, type, ...otherProps }: ThemedViewProps) {
-  const theme = useTheme();
+// Full class strings so Tailwind can find them when scanning the source.
+const backgroundClasses: Record<ThemeColor, string> = {
+  background: 'bg-background dark:bg-background-dark',
+  backgroundElement: 'bg-element dark:bg-element-dark',
+  backgroundSelected: 'bg-selected dark:bg-selected-dark',
+  text: 'bg-foreground dark:bg-foreground-dark',
+  textSecondary: 'bg-muted dark:bg-muted-dark',
+};
 
-  return <View style={[{ backgroundColor: theme[type ?? 'background'] }, style]} {...otherProps} />;
+export function ThemedView({ className, lightColor, darkColor, type, ...otherProps }: ThemedViewProps) {
+  return (
+    <View className={`${backgroundClasses[type ?? 'background']} ${className ?? ''}`} {...otherProps} />
+  );
 }
